@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GEARTRACK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <p class="form-error boot-error" id="boot-error" role="alert" hidden></p>
+
+  <!-- ============ SIGN IN / CREATE ACCOUNT ============ -->
+  <main id="auth-view" class="auth">
+    <section class="auth-brand" aria-label="About GEARTRACK">
+      <div class="brand-row">
+        <svg class="brand-mark brand-mark-lg" viewBox="0 0 48 48" role="img" aria-label="GEARTRACK logo">
+          <polygon class="mark-hex" points="24,2 43,13 43,35 24,46 5,35 5,13"/>
+          <path class="mark-g" d="M32.4 16.9 A11 11 0 1 0 35 24 H25" />
+          <polygon class="mark-slash" points="5,35 5,28 20,46 12,40.5"/>
+        </svg>
+        <div class="wordmark wordmark-lg"><span class="wm-gear">GEAR</span><span class="wm-track">TRACK</span></div>
+      </div>
+      <h1>Know where every piece of kit is.</h1>
+      <p>Log balls, racquets, helmets and nets. See what is available, what is out on loan and what needs repair before game day.</p>
+      <dl class="role-list">
+        <div><dt>Admin</dt><dd>Adds, edits and deletes equipment, and manages users</dd></div>
+        <div><dt>Staff</dt><dd>Adds and edits equipment</dd></div>
+        <div><dt>Viewer</dt><dd>Searches and views equipment</dd></div>
+      </dl>
+    </section>
+
+    <section class="auth-panel">
+      <div class="auth-card">
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab is-active" id="tab-login" role="tab" aria-selected="true" aria-controls="login-form">Sign in</button>
+          <button type="button" class="tab" id="tab-register" role="tab" aria-selected="false" aria-controls="register-form">Create account</button>
+        </div>
+
+        <form id="login-form" class="form" autocomplete="on" novalidate>
+          <div class="field">
+            <label for="login-username">Username</label>
+            <input id="login-username" name="username" type="text" autocomplete="username" required>
+          </div>
+          <div class="field">
+            <label for="login-password">Password</label>
+            <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+          </div>
+          <p class="form-error" id="login-error" role="alert" hidden></p>
+          <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+
+          <div class="demo-box">
+            <p>Demo accounts, one click each:</p>
+            <div class="demo-buttons">
+              <button type="button" class="btn btn-ghost btn-sm" data-demo="admin|admin123">Admin</button>
+              <button type="button" class="btn btn-ghost btn-sm" data-demo="coach|coach123">Staff</button>
+              <button type="button" class="btn btn-ghost btn-sm" data-demo="member|member123">Viewer</button>
+            </div>
+          </div>
+        </form>
+
+        <form id="register-form" class="form" autocomplete="on" novalidate hidden>
+          <div class="field">
+            <label for="reg-name">Full name</label>
+            <input id="reg-name" name="name" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="reg-username">Username</label>
+            <input id="reg-username" name="username" type="text" autocomplete="username" required>
+            <small>At least 3 characters, no spaces.</small>
+          </div>
+          <div class="field">
+            <label for="reg-password">Password</label>
+            <input id="reg-password" name="password" type="password" autocomplete="new-password" required>
+            <small>At least 6 characters.</small>
+          </div>
+          <div class="field">
+            <label for="reg-confirm">Confirm password</label>
+            <input id="reg-confirm" name="confirm" type="password" autocomplete="new-password" required>
+          </div>
+          <p class="note">New accounts start as Viewer. An Admin can give you more access.</p>
+          <p class="form-error" id="register-error" role="alert" hidden></p>
+          <button type="submit" class="btn btn-primary btn-block">Create account</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ APP ============ -->
+  <div class="layout" id="app-view" hidden>
+
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-row">
+          <svg class="brand-mark" viewBox="0 0 48 48" role="img" aria-label="GEARTRACK logo">
+            <polygon class="mark-hex" points="24,2 43,13 43,35 24,46 5,35 5,13"/>
+            <path class="mark-g" d="M32.4 16.9 A11 11 0 1 0 35 24 H25" />
+            <polygon class="mark-slash" points="5,35 5,28 20,46 12,40.5"/>
+          </svg>
+          <div class="wordmark"><span class="wm-gear">GEAR</span><span class="wm-track">TRACK</span></div>
+        </div>
+        <p class="brand-tag">Sports equipment manager</p>
+      </div>
+
+      <button type="button" class="btn btn-add" id="add-btn">
+        <span class="plus" aria-hidden="true">+</span> Add equipment
+      </button>
+
+      <nav class="side-group" aria-label="Filter by status">
+        <h2 class="side-title">Status</h2>
+        <div class="side-list" id="status-nav"></div>
+      </nav>
+
+      <nav class="side-group" aria-label="Filter by category">
+        <h2 class="side-title">Category</h2>
+        <div class="side-list" id="category-nav"></div>
+      </nav>
+
+      <div class="user-box">
+        <div class="user-info">
+          <span class="user-name" id="user-name"></span>
+          <span class="role-badge" id="user-role"></span>
+        </div>
+        <div class="user-actions">
+          <button type="button" class="side-action" id="manage-users-btn" hidden>Manage users</button>
+          <button type="button" class="side-action" id="logout-btn">Sign out</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="page-head">
+        <h1>Equipment inventory</h1>
+        <p id="page-sub">Search, check condition and manage every piece of kit in one place.</p>
+      </header>
+
+      <section class="stats" aria-label="Inventory summary">
+        <div class="stat"><span class="stat-label">Items logged</span><strong id="stat-total">0</strong><span class="stat-sub" id="stat-units"></span></div>
+        <div class="stat stat-available"><span class="stat-label">Available</span><strong id="stat-available">0</strong></div>
+        <div class="stat stat-inuse"><span class="stat-label">In use</span><strong id="stat-inuse">0</strong></div>
+        <div class="stat stat-repair"><span class="stat-label">Under repair</span><strong id="stat-repair">0</strong></div>
+      </section>
+
+      <section class="toolbar" aria-label="Search">
+        <div class="field field-search">
+          <label for="search-input">Search</label>
+          <input id="search-input" type="search" placeholder="Name, asset tag, location or notes">
+        </div>
+      </section>
+
+      <p class="result-count">
+        <span id="result-count" aria-live="polite"></span>
+        <button type="button" class="link-btn" id="reset-filters" hidden>Reset filters</button>
+      </p>
+
+      <div class="table-wrap">
+        <table class="grid">
+          <thead>
+            <tr>
+              <th scope="col">Tag</th>
+              <th scope="col">Equipment</th>
+              <th scope="col" class="num">Qty</th>
+              <th scope="col">Location</th>
+              <th scope="col">Status</th>
+              <th scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody id="item-rows"></tbody>
+        </table>
+        <div class="empty" id="empty-state" hidden>
+          <strong>No equipment found</strong>
+          <p id="empty-text">Nothing matches your search. Reset the filters or add a new item.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ============ ADD / EDIT DIALOG ============ -->
+  <dialog id="item-dialog" aria-labelledby="item-dialog-title">
+    <form id="item-form" class="dialog-form" novalidate>
+      <h2 id="item-dialog-title">Add equipment</h2>
+      <input type="hidden" id="item-id">
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="item-name">Equipment name</label>
+          <input id="item-name" type="text" maxlength="80" required placeholder="e.g. Size 5 match football">
+        </div>
+        <div class="field">
+          <label for="item-category">Category</label>
+          <select id="item-category" required></select>
+        </div>
+        <div class="field">
+          <label for="item-status">Status</label>
+          <select id="item-status" required></select>
+        </div>
+        <div class="field">
+          <label for="item-qty">Quantity</label>
+          <input id="item-qty" type="number" min="1" step="1" value="1" required>
+        </div>
+        <div class="field">
+          <label for="item-date">Purchase date</label>
+          <input id="item-date" type="date">
+        </div>
+        <div class="field span-2">
+          <label for="item-location">Storage location</label>
+          <input id="item-location" type="text" maxlength="80" placeholder="e.g. Cage B, shelf 3">
+        </div>
+        <div class="field span-2">
+          <label for="item-notes">Notes</label>
+          <textarea id="item-notes" rows="3" maxlength="300" placeholder="Condition, who has it, repair details"></textarea>
+        </div>
+      </div>
+      <p class="form-error" id="item-error" role="alert" hidden></p>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-ghost" data-close="item-dialog">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="item-submit">Save equipment</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ============ VIEW DIALOG ============ -->
+  <dialog id="view-dialog" aria-labelledby="view-title">
+    <div class="dialog-form">
+      <p class="tag" id="view-tag"></p>
+      <h2 id="view-title"></h2>
+      <div id="view-status"></div>
+      <dl class="details" id="view-details"></dl>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-ghost" data-close="view-dialog">Close</button>
+        <button type="button" class="btn btn-primary" id="view-edit">Edit</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ============ DELETE CONFIRM ============ -->
+  <dialog id="delete-dialog" aria-labelledby="delete-title">
+    <div class="dialog-form">
+      <h2 id="delete-title">Delete this equipment?</h2>
+      <p id="delete-text"></p>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-ghost" data-close="delete-dialog">Keep it</button>
+        <button type="button" class="btn btn-danger" id="delete-confirm">Delete</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ============ MANAGE USERS (Admin) ============ -->
+  <dialog id="users-dialog" class="wide" aria-labelledby="users-title">
+    <div class="dialog-form">
+      <h2 id="users-title">Manage users</h2>
+      <div class="table-wrap">
+        <table class="grid users-grid">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Username</th>
+              <th scope="col">Role</th>
+              <th scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody id="users-rows"></tbody>
+        </table>
+      </div>
+
+      <form id="user-form" class="user-form" novalidate>
+        <h3>Add a user</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label for="user-new-name">Full name</label>
+            <input id="user-new-name" type="text" maxlength="60" required>
+          </div>
+          <div class="field">
+            <label for="user-new-username">Username</label>
+            <input id="user-new-username" type="text" maxlength="30" autocomplete="off" required>
+          </div>
+          <div class="field">
+            <label for="user-new-password">Password</label>
+            <input id="user-new-password" type="password" autocomplete="new-password" required>
+          </div>
+          <div class="field">
+            <label for="user-new-role">Role</label>
+            <select id="user-new-role"></select>
+          </div>
+        </div>
+        <p class="form-error" id="user-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-ghost" data-close="users-dialog">Close</button>
+          <button type="submit" class="btn btn-primary">Add user</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="app.js"></script>
+  <script>
+    // If app.js did not load, say so on the page.
+    if (!window.__geartrackReady) {
+      var box = document.getElementById('boot-error');
+      box.textContent = 'app.js did not load. Check that the file is named exactly app.js and sits in the same folder as index.html.';
+      box.hidden = false;
+    }
+  </script>
+</body>
+</html>
